@@ -60,11 +60,23 @@ var writeChatIds = function(config) {
 var getName = function(user, config) {
     var name = config.nameFormat;
 
+    // Check if in the config.nameFormat has firstName or lastName yet
+    // to dont show the names two times, if needed
+    var hasFirstName = name.replace('%firstName%', true, 'g');
+    var hasLastName = name.replace('%lastName%', true, 'g');
+
     if (user.username) {
         name = name.replace('%username%', user.username, 'g');
     } else {
-        // if user lacks username, use fallback format string instead
-        name = name.replace('%username%', config.usernameFallbackFormat, 'g');
+        // This will be execute if the user don't have username
+        // if user use firstName or lastName yet, only show 'No username'
+        if (hasFirstName || hasLastName) {
+            // Display only 'No username' if use it
+            name = name.replace('%username%', 'No username', 'g');
+        } else {
+            // Display fallback format string
+            name = name.replace('%username%', config.usernameFallbackFormat, 'g');
+        }
     }
 
     name = name.replace('%firstName%', user.first_name, 'g');
